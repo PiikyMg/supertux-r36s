@@ -22,7 +22,8 @@ jobs:
           libfreetype6-dev \
           libogg-dev \
           libboost-all-dev \
-          libfmt-dev
+          libfmt-dev \
+          libglm-dev
       - name: Build
         run: |
           mkdir build && cd build
