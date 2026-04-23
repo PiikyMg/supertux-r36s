@@ -5,24 +5,22 @@ jobs:
     runs-on: ubuntu-latest
     container: dockcross/linux-arm64:latest
     steps:
-      - name: Descargar código oficial
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build
         run: |
           git config --global --add safe.directory '*'
-          # Borramos los archivos que subiste manualmente porque están vacíos
-          rm -rf *
-          # Descargamos el SuperTux original directamente de su web
-          git clone --recursive https://github.com/SuperTux/supertux.git .
-          
-      - name: Instalar dependencias
-        run: |
           apt-get update && apt-get install -y \
           libpng-dev libphysfs-dev libsdl2-dev libsdl2-image-dev \
           libsdl2-mixer-dev libsdl2-ttf-dev libvorbis-dev \
           libopenal-dev libcurl4-openssl-dev libfreetype6-dev \
           libogg-dev libboost-all-dev libfmt-dev libglm-dev libraqm-dev
           
-      - name: Build
-        run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          # Estas flags fuerzan al compilador a mirar solo en la carpeta de la consola
+          cmake .. -DCMAKE_BUILD_TYPE=Release \
+                   -DCMAKE_FIND_ROOT_PATH_MODE_INCLUDE=ONLY \
+                   -DCMAKE_FIND_ROOT_PATH_MODE_LIBRARY=ONLY
           make -j4
