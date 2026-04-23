@@ -6,10 +6,18 @@ jobs:
     container: dockcross/linux-arm64:latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Fix Git and Submodules
+        run: |
+          # Esto dice: "Confía en todas las carpetas, no me des más errores de permisos"
+          git config --global --add safe.directory '*'
+          # Esto fuerza la descarga de las piezas internas (las carpetas externas)
+          git submodule update --init --recursive
+          
       - name: Install dependencies
         run: |
-          git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
-          git submodule update --init --recursive
           apt-get update && apt-get install -y \
           libpng-dev libphysfs-dev libsdl2-dev libsdl2-image-dev \
           libsdl2-mixer-dev libsdl2-ttf-dev libvorbis-dev \
@@ -18,9 +26,6 @@ jobs:
           
       - name: Build
         run: |
-          # Esta línea obliga al compilador a usar solo las librerías de ARM64
-          export PKG_CONFIG_PATH=/usr/aarch64-unknown-linux-gnu/lib/pkgconfig
-          
           mkdir build && cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make -j4
