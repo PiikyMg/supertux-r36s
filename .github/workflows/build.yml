@@ -1,11 +1,16 @@
 name: Build Port
-on: [push, workflow_dispatch]
+on: [push]
 jobs:
   build:
     runs-on: ubuntu-latest
     container: dockcross/linux-arm64:latest
     steps:
       - uses: actions/checkout@v4
+      - name: Install dependencies
+        run: |
+          # Esto arregla el aviso de "dubious ownership" y añade la librería que falta
+          git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
+          apt-get update && apt-get install -y libpng-dev
       - name: Build
         run: |
           mkdir build && cd build
