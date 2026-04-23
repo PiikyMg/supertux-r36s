@@ -5,15 +5,11 @@ jobs:
     runs-on: ubuntu-latest
     container: dockcross/linux-arm64:latest
     steps:
-      - name: Clean and Clone
-        run: |
-          # Borramos lo que subiste manualmente para no tener conflictos
-          rm -rf *
-          # Descargamos el código OFICIAL con todas sus piezas internas
-          git clone --recursive https://github.com/SuperTux/supertux.git .
-          
+      - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
+          git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
+          git submodule update --init --recursive
           apt-get update && apt-get install -y \
           libpng-dev libphysfs-dev libsdl2-dev libsdl2-image-dev \
           libsdl2-mixer-dev libsdl2-ttf-dev libvorbis-dev \
@@ -22,6 +18,9 @@ jobs:
           
       - name: Build
         run: |
+          # Esta línea obliga al compilador a usar solo las librerías de ARM64
+          export PKG_CONFIG_PATH=/usr/aarch64-unknown-linux-gnu/lib/pkgconfig
+          
           mkdir build && cd build
           cmake .. -DCMAKE_BUILD_TYPE=Release
           make -j4
