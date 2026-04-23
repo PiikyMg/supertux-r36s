@@ -8,9 +8,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          # Esto arregla el aviso de "dubious ownership" y añade la librería que falta
-          git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
-          apt-get update && apt-get install -y libpng-dev
+          apt-get update && apt-get install -y libpng-dev libphysfs-dev libsdl2-dev libvorbis-dev libopenal-dev
       - name: Build
         run: |
           mkdir build && cd build
