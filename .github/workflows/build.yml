@@ -8,16 +8,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-          
-      - name: Install dependencies
+
+      - name: Install dependencies and Fix Git
         run: |
+          # Arreglamos el error de "dubious ownership"
           git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
+          # Forzamos la descarga de los submódulos por si acaso
+          git submodule update --init --recursive
+          
+          # Instalamos las piezas
           apt-get update && apt-get install -y \
           libpng-dev libphysfs-dev libsdl2-dev libsdl2-image-dev \
           libsdl2-mixer-dev libsdl2-ttf-dev libvorbis-dev \
           libopenal-dev libcurl4-openssl-dev libfreetype6-dev \
           libogg-dev libboost-all-dev libfmt-dev libglm-dev libraqm-dev
-          
+
       - name: Build
         run: |
           mkdir build && cd build
