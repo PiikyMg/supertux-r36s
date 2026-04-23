@@ -1,104 +1,18 @@
-Run mkdir build && cd build
-  mkdir build && cd build
-  cmake .. -DCMAKE_BUILD_TYPE=Release
-  make -j4
-  shell: sh -e {0}
--- The C compiler identification is GNU 12.3.0
--- The CXX compiler identification is GNU 12.3.0
--- Detecting C compiler ABI info
--- Detecting C compiler ABI info - done
--- Check for working C compiler: /usr/xcc/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-gcc - skipped
--- Detecting C compile features
--- Detecting C compile features - done
--- Detecting CXX compiler ABI info
--- Detecting CXX compiler ABI info - done
--- Check for working CXX compiler: /usr/xcc/aarch64-unknown-linux-gnu/bin/aarch64-unknown-linux-gnu-g++ - skipped
--- Detecting CXX compile features
--- Detecting CXX compile features - done
-fatal: No names found, cannot describe anything.
--- "/usr/local/bin/git describe;--tags;--abbrev=0" failed with result "128".
--- Git version checking results:
---   GIT_TAG: GIT_TAG-NOTFOUND
---   GIT_HASH: 146a24c
---   GIT_BRANCH: main
---   SUPERTUX_PACKAGE_VERSION: dev 146a24c (main)
---   SUPERTUX_PACKAGE_VERSION_TAG: GIT_TAG-NOTFOUND
---   SUPERTUX_VERSION_STRING: main-146a24c
--- Performing Test HAVE_ICONV_CONST
--- Performing Test HAVE_ICONV_CONST - Failed
--- Found PkgConfig: /usr/bin/pkg-config (found version "1.8.1") 
--- Looking for PNG using find_package.
--- CMake Package "PNG" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'libpng'
--- Package "PNG" was found successfully using pkg-config!
--- Looking for ZLIB using find_package.
--- CMake Package "ZLIB" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'zlib'
--- Package "ZLIB" was found successfully using pkg-config!
--- CMake Package "PhysFS" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'physfs;PhysicsFS'
--- Package "PhysFS" was found successfully using pkg-config!
--- Looking for fmt using find_package.
--- CMake Package "fmt" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'fmt'
--- Package "fmt" was found successfully using pkg-config!
--- Looking for glm using find_package.
--- Package "glm" was found successfully!
--- Looking for Freetype using find_package.
--- CMake Package "Freetype" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'freetype2'
--- Package "Freetype" was found successfully using pkg-config!
--- Looking for RAQM using find_package.
--- CMake Package "RAQM" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'libraqm;raqm'
--- Package "RAQM" was found successfully using pkg-config!
--- Looking for SDL2 using find_package.
--- CMake Package "SDL2" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'sdl2;SDL2'
--- Package "SDL2" was found successfully using pkg-config!
--- Looking for SDL2_image using find_package.
--- CMake Package "SDL2_image" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'SDL2_image;sdl2_image'
--- Package "SDL2_image" was found successfully using pkg-config!
--- Looking for CURL using find_package.
--- Package "CURL" was found successfully!
--- Looking for OpenAL using find_package.
--- CMake Package "OpenAL" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'OpenAL;openal'
--- Package "OpenAL" was found successfully using pkg-config!
--- Looking for Ogg using find_package.
--- CMake Package "Ogg" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'ogg'
--- Package "Ogg" was found successfully using pkg-config!
--- Looking for Vorbis using find_package.
--- CMake Package "Vorbis" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'vorbis'
--- Package "Vorbis" was found successfully using pkg-config!
--- Looking for Vorbis using find_package.
--- CMake Package "Vorbis" doesn't exist, so falling back to PkgConfig
--- Checking for one of the modules 'vorbisfile'
-CMake Error at CMakeLists.txt:223 (add_subdirectory):
--- Package "Vorbis" was found successfully using pkg-config!
-  add_subdirectory given source "external/sexp-cpp" which is not an existing
-  directory.
-CMake Error at CMakeLists.txt:225 (add_subdirectory):
-  add_subdirectory given source "external/SDL_ttf" which is not an existing
-  directory.
--- Compiling SDL_ttf with RAQM
-CMake Error at CMakeLists.txt:228 (add_subdirectory):
-  add_subdirectory given source "external/simplesquirrel" which is not an
-  existing directory.
-CMake Error at CMakeLists.txt:232 (add_subdirectory):
-  add_subdirectory given source "external/tinygettext" which is not an
-  existing directory.
--- OpenGL not found! OpenGL support is disabled.
-CMake Error at CMakeLists.txt:424 (set_property):
-  set_property could not find TARGET squirrel.  Perhaps it has not yet been
-  created.
-CMake Error at mk/cmake/SuperTux/BuildInstall.cmake:65 (install):
-  install TARGETS given target "simplesquirrel" which does not exist.
-Call Stack (most recent call first):
-  CMakeLists.txt:483 (include)
--- Build with tests: OFF
--- Configuring incomplete, errors occurred!
-Error: Process completed with exit code 1.
+name: Build Port
+on: [push, workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container: dockcross/linux-arm64:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Build
+        run: |
+          git config --global --add safe.directory '*'
+          git submodule update --init --recursive
+          apt-get update && apt-get install -y libpng-dev libphysfs-dev libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev libvorbis-dev libopenal-dev libcurl4-openssl-dev libfreetype6-dev libogg-dev libboost-all-dev libfmt-dev libglm-dev libraqm-dev
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j4
