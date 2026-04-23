@@ -5,14 +5,13 @@ jobs:
     runs-on: ubuntu-latest
     container: dockcross/linux-arm64:latest
     steps:
-      - uses: actions/checkout@v4
-      
-      - name: Prep Submodules and Git
+      - name: Clean and Clone
         run: |
-          git config --global --add safe.directory /__w/supertux-r36s/supertux-r36s
-          # Esto fuerza la descarga de las piezas internas del juego
-          git submodule update --init --recursive
-
+          # Borramos lo que subiste manualmente para no tener conflictos
+          rm -rf *
+          # Descargamos el código OFICIAL con todas sus piezas internas
+          git clone --recursive https://github.com/SuperTux/supertux.git .
+          
       - name: Install dependencies
         run: |
           apt-get update && apt-get install -y \
